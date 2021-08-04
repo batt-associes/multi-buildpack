@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+pretty_start () {
+  case $# in
+  1|2)
+    local color=39
+    case $1 in
+    "black") color=30;;
+    "red") color=31;;
+    "green") color=32;;
+    "yellow") color=33;;
+    "blue") color=34;;
+    "magenta") color=35;;
+    "cyan") color=36;;
+    "grey") color=37;;
+    esac
+    local weight="0"
+    case $2 in
+    "bold") weight=1;;
+    "dim") weight=2;;
+    "italic") weight=3;;
+    "underlined") weight=4;;
+    esac
+    echo -en "\\e[$weight;${color}m"
+    ;;
+  *) echo -e "Usage: $0 (color) (weight)";;
+  esac
+  return 0;
+}
+
+pretty_end () {
+  echo -en "\\e[0m"
+}
+
+repeat_print () {
+  case $# in
+  1|2)
+    local repeats=${2:-10}
+    printf "%.0s$1" $(seq 1 "$repeats")
+    ;;
+  *) echo -e "Usage: $0 [char] (repeats=10)";;
+  esac
+  return 0;
+}
+
+title_print () {
+  case $# in
+  1|2|3)
+    local char=${2:-'='}
+    local repeats=${3:-5}
+
+    pretty_start "blue"
+    repeat_print "$char" "$repeats"
+
+    pretty_start "blue" "italic"
+    printf " %s " "$1"
+
+    pretty_start "blue"
+    repeat_print "$char" "$repeats"
+
+    printf "\n"
+    pretty_end
+    ;;
+  *) echo -e "Usage: $0 [title] (char='=') (repeats=5)";;
+  esac
+  return 0;
+}
+
+block_print () {
+  case $# in
+  1|2|3)
+    local char=${2:-'='}
+    local repeats=${3:-5}
+    local line_len=$((repeats * 2 + 2 + ${#1}))
+
+    pretty_start "blue"
+    repeat_print "$char" "$line_len"
+    printf "\n"
+
+    title_print "$1" "$char" "$repeats"
+
+    pretty_start "blue"
+    repeat_print "$char" "$line_len"
+    printf "\n"
+
+    pretty_end
+    ;;
+  *) echo -e "Usage: $0 [title] (char='=') (repeats=5)";;
+  esac
+  return 0;
+}

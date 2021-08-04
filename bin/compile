@@ -4,6 +4,12 @@ set -e
 
 [ "$BUILDPACK_DEBUG" = "true" ] && set -x
 
+# Set MULTI_BUILDPACK_VERBOSE to 1 for alternate logging more verbose
+VERBOSE=${MULTI_BUILDPACK_VERBOSE:-0}
+# Pretty print functions used for VERBOSE=1
+BIN_DIR=$(cd "$(dirname "$0")"; pwd) # absolute path
+source "$BIN_DIR/util/printing"
+
 function indent() {
   c='s/^/       /'
   case $(uname) in
@@ -30,7 +36,10 @@ for BUILDPACK in $(cat $1/.buildpacks); do
   fi
 
   if [ "$url" != "" ]; then
+    [ "$VERBOSE" -eq 1 ] && block_print "Buildpack: $BUILDPACK"
+    [ "$VERBOSE" -eq 1 ] && pretty_start "magenta" "dim"
     echo "=====> Downloading Buildpack: $url"
+    [ "$VERBOSE" -eq 1 ] && pretty_end
 
     if [[ "$url" =~ \.tgz$ || "$url" =~ \.tar\.gz$ ]]; then
       mkdir -p "$dir"
@@ -38,12 +47,16 @@ for BUILDPACK in $(cat $1/.buildpacks); do
     else
       git clone $url $dir >/dev/null 2>&1
       if [ -f "$dir/.gitmodules" ]; then
+        [ "$VERBOSE" -eq 1 ] && pretty_start "magenta" "dim"
         echo "=====> Detected git submodules. Initializing..."
+        [ "$VERBOSE" -eq 1 ] && pretty_end
         (cd $dir && git submodule update --init --recursive)
       fi
 
       if [ "$branch" != "" ]; then
+        [ "$VERBOSE" -eq 1 ] && pretty_start "magenta" "dim"
         echo "=====> Using branch: $branch"
+        [ "$VERBOSE" -eq 1 ] && pretty_end
         (cd $dir && git checkout $branch >/dev/null 2>&1)
       fi
     fi
@@ -70,6 +83,7 @@ for BUILDPACK in $(cat $1/.buildpacks); do
       if [ -x $dir/bin/release ]; then
         $dir/bin/release $1 > $1/last_pack_release.out
       fi
+      [ "$VERBOSE" -eq 1 ] && title_print "End: $BUILDPACK"
     else
       echo " !     Application is not compatible with the buildpack."
       echo "       Check buildpack documentation for more information:"
