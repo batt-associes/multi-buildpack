@@ -37,7 +37,7 @@ for BUILDPACK in $(cat $1/.buildpacks); do
 
   if [ "$url" != "" ]; then
     [ "$VERBOSE" -eq 1 ] && block_print "Buildpack: $BUILDPACK"
-    [ "$VERBOSE" -eq 1 ] && pretty_start "magenta" "dim"
+    [ "$VERBOSE" -eq 1 ] && pretty_start "yellow" "dim"
     echo "=====> Downloading Buildpack: $url"
     [ "$VERBOSE" -eq 1 ] && pretty_end
 
@@ -47,14 +47,14 @@ for BUILDPACK in $(cat $1/.buildpacks); do
     else
       git clone $url $dir >/dev/null 2>&1
       if [ -f "$dir/.gitmodules" ]; then
-        [ "$VERBOSE" -eq 1 ] && pretty_start "magenta" "dim"
+        [ "$VERBOSE" -eq 1 ] && pretty_start "yellow" "dim"
         echo "=====> Detected git submodules. Initializing..."
         [ "$VERBOSE" -eq 1 ] && pretty_end
         (cd $dir && git submodule update --init --recursive)
       fi
 
       if [ "$branch" != "" ]; then
-        [ "$VERBOSE" -eq 1 ] && pretty_start "magenta" "dim"
+        [ "$VERBOSE" -eq 1 ] && pretty_start "yellow" "dim"
         echo "=====> Using branch: $branch"
         [ "$VERBOSE" -eq 1 ] && pretty_end
         (cd $dir && git checkout $branch >/dev/null 2>&1)
@@ -68,7 +68,9 @@ for BUILDPACK in $(cat $1/.buildpacks); do
     framework=$($dir/bin/detect $1)
 
     if [ $? == 0 ]; then
+      [ "$VERBOSE" -eq 1 ] && pretty_start "magenta" "bold"
       echo "=====> Detected Framework: $framework"
+      [ "$VERBOSE" -eq 1 ] && pretty_end
       $dir/bin/compile $1 $2 $3
 
       if [ $? != 0 ]; then
@@ -83,7 +85,7 @@ for BUILDPACK in $(cat $1/.buildpacks); do
       if [ -x $dir/bin/release ]; then
         $dir/bin/release $1 > $1/last_pack_release.out
       fi
-      [ "$VERBOSE" -eq 1 ] && title_print "End: $BUILDPACK"
+      [ "$VERBOSE" -eq 1 ] && title_print "End: $BUILDPACK" "|"
     else
       echo " !     Application is not compatible with the buildpack."
       echo "       Check buildpack documentation for more information:"
