@@ -85,7 +85,8 @@ for BUILDPACK in $(cat $1/.buildpacks); do
       if [ -x $dir/bin/release ]; then
         $dir/bin/release $1 > $1/last_pack_release.out
       fi
-      [ "$VERBOSE" -eq 1 ] && title_print "End: $BUILDPACK" "|"
+      [ "$VERBOSE" -eq 1 ] && title_print "End: $framework" "~"
+      [ "$VERBOSE" -eq 1 ] && printf "\n"
     else
       echo " !     Application is not compatible with the buildpack."
       echo "       Check buildpack documentation for more information:"
