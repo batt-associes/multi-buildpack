@@ -47,7 +47,7 @@ title_print () {
   case $# in
   1|2|3)
     local char=${2:-'='}
-    local repeats=${3:-5}
+    local repeats=${3:-6}
 
     pretty_start "blue"
     repeat_print "$char" "$repeats"
@@ -61,7 +61,7 @@ title_print () {
     printf "\n"
     pretty_end
     ;;
-  *) echo -e "Usage: $0 [title] (char='=') (repeats=5)";;
+  *) echo -e "Usage: $0 [title] (char='=') (repeats=6)";;
   esac
   return 0;
 }
@@ -70,7 +70,7 @@ block_print () {
   case $# in
   1|2|3)
     local char=${2:-'='}
-    local repeats=${3:-5}
+    local repeats=${3:-6}
     local line_len=$((repeats * 2 + 2 + ${#1}))
 
     pretty_start "blue"
@@ -85,7 +85,7 @@ block_print () {
 
     pretty_end
     ;;
-  *) echo -e "Usage: $0 [title] (char='=') (repeats=5)";;
+  *) echo -e "Usage: $0 [title] (char='=') (repeats=6)";;
   esac
   return 0;
 }
