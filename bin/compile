@@ -6,6 +6,8 @@ set -e
 
 # Set MULTI_BUILDPACK_VERBOSE to 1 for alternate logging more verbose
 VERBOSE=${MULTI_BUILDPACK_VERBOSE:-0}
+# Set MULTI_BUILDPACK_DISK_USAGE to 1 to display disk usage at the end of buildpack
+DISK_USAGE=${MULTI_BUILDPACK_DISK_USAGE:-0}
 # Pretty print functions used for VERBOSE=1
 BIN_DIR=$(cd "$(dirname "$0")"; pwd) # absolute path
 source "$BIN_DIR/util/printing"
@@ -86,6 +88,10 @@ for BUILDPACK in $(cat $1/.buildpacks); do
         $dir/bin/release $1 > $1/last_pack_release.out
       fi
       [ "$VERBOSE" -eq 1 ] && title_print "End: $framework" "~"
+      if [ "$DISK_USAGE" == 1]; then
+        size=$(du -sm | awk '{print $1}')
+        title_print "Current size: $size M" "~"
+      fi
       [ "$VERBOSE" -eq 1 ] && printf "\n"
     else
       echo " !     Application is not compatible with the buildpack."
