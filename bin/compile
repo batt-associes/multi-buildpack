@@ -89,8 +89,9 @@ for BUILDPACK in $(cat $1/.buildpacks); do
       fi
       [ "$VERBOSE" -eq 1 ] && title_print "End: $framework" "~"
       if [ "$DISK_USAGE" -eq 1 ]; then
-        size=$(du -sm | awk '{print $1}')
-        title_print "Current size: $size M" "~"
+        # Print size of the parent folder in MB
+        size=$(du -sm .. | awk '{print $1}')
+        title_print "Current total size: $size M" "~"
       fi
       [ "$VERBOSE" -eq 1 ] && printf "\n"
     else
